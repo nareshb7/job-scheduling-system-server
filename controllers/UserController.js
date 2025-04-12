@@ -4,7 +4,7 @@ const { UserModel } = require("../models/UserModel");
 
 const getUserById = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } = req.params;
     if (!isValidObjectId(id)) {
       throw new Error("Id is not valid");
     }

@@ -6,7 +6,7 @@ const {
 
 const applicationRouter = Router();
 
-applicationRouter.get("/", getJobApplications);
+applicationRouter.get("/:id", getJobApplications);
 applicationRouter.post("/create", createNewApplication);
 
 module.exports = applicationRouter;

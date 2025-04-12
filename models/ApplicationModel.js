@@ -41,6 +41,14 @@ const applicationSchema = mongoose.Schema(
     },
     notes: String,
     jobId: String,
+    resumeId: String,
+    history: {
+      date: String,
+      round: String,
+      questions: Array,
+      description: String,
+      default: [],
+    },
   },
   { minimize: false, timestamps: true }
 );

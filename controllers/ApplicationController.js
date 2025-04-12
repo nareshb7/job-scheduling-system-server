@@ -16,6 +16,7 @@ const createNewApplication = async (req, res) => {
       jobDescription,
       companyLocation,
       userId,
+      resumeId,
     } = req.body;
     if (
       !jobId ||
@@ -28,7 +29,8 @@ const createNewApplication = async (req, res) => {
       !hrName ||
       !jobDescription ||
       !companyLocation ||
-      !userId
+      !userId ||
+      !resumeId
     ) {
       throw new Error("Fields are required");
     }
@@ -49,6 +51,7 @@ const createNewApplication = async (req, res) => {
       jobDescription,
       companyLocation,
       userId,
+      resumeId,
     });
     console.log("body::");
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
@@ -59,7 +62,7 @@ const createNewApplication = async (req, res) => {
 
 const getJobApplications = async (req, res) => {
   try {
-    const { id } = req.query;
+    const { id } = req.params;
     if (!isValidObjectId(id)) {
       throw new Error("Id is not valid");
     }
