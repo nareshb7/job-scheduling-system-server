@@ -3,6 +3,7 @@ const { STATUS_CODES } = require("../constants");
 const { ApplicationModel } = require("../models/ApplicationModel");
 const { InterviewQuestionModel } = require("../models/InterviewQuestionsModel");
 const { checkValidation } = require("./helper");
+const { getAnswers } = require("./InterviewQuestions");
 
 const createNewApplication = async (req, res) => {
   try {
@@ -86,7 +87,7 @@ const editInterviewRound = async (req, res) => {
         $push: {
           interviewRounds: {
             nextInterviewDate,
-            questionsAsked: questionsAsked.split(";"),
+            questionsAsked: questionsAsked,
             description,
             performance,
             roundName,
@@ -96,15 +97,21 @@ const editInterviewRound = async (req, res) => {
       },
       { new: true }
     );
-    const questions = questionsAsked.split(";").map((question) => ({
+    const parsedAnswer = await getAnswers(questionsAsked);
+
+    const interviewQuestions = parsedAnswer.map((question) => ({
       applicationId: id,
       userId,
       company: data.company,
-      question,
-      answer: "",
+      question: question.question,
+      answer: question.answer,
     }));
-    await InterviewQuestionModel.insertMany(questions);
-    res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
+    await InterviewQuestionModel.insertMany(interviewQuestions);
+    res.status(STATUS_CODES.SUCCESS).json({
+      success: true,
+      genAIResponse,
+      data,
+    });
   } catch (err) {
     res.status(STATUS_CODES.ERROR).send(err.message);
   }
