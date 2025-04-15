@@ -67,7 +67,6 @@ const downloadResume = async (req, res) => {
       "Content-Type": resume.file.contentType,
       "Content-Disposition": `attachment; filename="${resume.file.originalName}"`,
     });
-    console.log("resume:::;", resume);
     res.send(resume.file.data);
   } catch (err) {
     res.status(STATUS_CODES.ERROR).json(err.message);
@@ -81,7 +80,6 @@ const deleteResume = async (req, res) => {
       throw new Error("Id is not valid");
     }
     const resume = await ResumeModel.findByIdAndDelete(id);
-    console.log("deletred:::", resume);
     res
       .status(STATUS_CODES.SUCCESS)
       .json({ success: true, message: "Resume Deleted Succesfully" });

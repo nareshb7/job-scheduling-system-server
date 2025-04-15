@@ -1,6 +1,8 @@
 const { isValidObjectId } = require("mongoose");
 const { STATUS_CODES } = require("../constants");
 const { ApplicationModel } = require("../models/ApplicationModel");
+const { InterviewQuestionModel } = require("../models/InterviewQuestionsModel");
+const { checkValidation } = require("./helper");
 
 const createNewApplication = async (req, res) => {
   try {
@@ -17,21 +19,9 @@ const createNewApplication = async (req, res) => {
       companyLocation,
       userId,
       resumeId,
+      hrEmail,
     } = req.body;
-    if (
-      !jobId ||
-      !company ||
-      !position ||
-      !appliedDate ||
-      !applicationStatus ||
-      !nextFollowup ||
-      !hrNumber ||
-      !hrName ||
-      !jobDescription ||
-      !companyLocation ||
-      !userId ||
-      !resumeId
-    ) {
+    if (!checkValidation(req.body)) {
       throw new Error("Fields are required");
     }
     if (!isValidObjectId(userId)) {
@@ -47,13 +37,13 @@ const createNewApplication = async (req, res) => {
       hrData: {
         phone: hrNumber,
         name: hrName,
+        email: hrEmail,
       },
       jobDescription,
       companyLocation,
       userId,
       resumeId,
     });
-    console.log("body::");
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
   } catch (err) {
     res.status(STATUS_CODES.ERROR).send(err.message);
@@ -73,7 +63,55 @@ const getJobApplications = async (req, res) => {
   }
 };
 
+const editInterviewRound = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      roundName,
+      performance,
+      nextFollowup,
+      description,
+      questionsAsked,
+      nextInterviewDate,
+      userId,
+      status,
+    } = req.body;
+    if (!checkValidation(req.body)) {
+      throw new Error("Fields are required.");
+    }
+
+    const data = await ApplicationModel.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          interviewRounds: {
+            nextInterviewDate,
+            questionsAsked: questionsAsked.split(";"),
+            description,
+            performance,
+            roundName,
+          },
+        },
+        $set: { nextFollowup, applicationStatus: status },
+      },
+      { new: true }
+    );
+    const questions = questionsAsked.split(";").map((question) => ({
+      applicationId: id,
+      userId,
+      company: data.company,
+      question,
+      answer: "",
+    }));
+    await InterviewQuestionModel.insertMany(questions);
+    res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
+  } catch (err) {
+    res.status(STATUS_CODES.ERROR).send(err.message);
+  }
+};
+
 module.exports = {
   createNewApplication,
   getJobApplications,
+  editInterviewRound,
 };

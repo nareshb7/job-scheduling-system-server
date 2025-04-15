@@ -4,7 +4,6 @@ const { generateNewId } = require("../utils/authHelper");
 
 const userSignUp = async (req, res) => {
   try {
-    console.log("body:::", req.body);
     const { firstName, lastName, location, email, mobile, password, role } =
       req.body;
 

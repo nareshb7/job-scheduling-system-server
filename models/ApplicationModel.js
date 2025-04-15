@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const InterviewRoundSchema = new mongoose.Schema({
+  date: String,
+  roundName: String,
+  performance: String,
+  nextInterviewDate: String,
+  questionsAsked: Array,
+  description: String,
+});
+
 const applicationSchema = mongoose.Schema(
   {
     userId: {
@@ -19,7 +28,7 @@ const applicationSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
-    applicatinStatus: {
+    applicationStatus: {
       type: String,
       required: true,
       default: "Applied",
@@ -30,6 +39,7 @@ const applicationSchema = mongoose.Schema(
     hrData: {
       name: String,
       phone: String,
+      email: String,
     },
     jobDescription: {
       type: String,
@@ -42,13 +52,7 @@ const applicationSchema = mongoose.Schema(
     notes: String,
     jobId: String,
     resumeId: String,
-    history: {
-      date: String,
-      round: String,
-      questions: Array,
-      description: String,
-      default: [],
-    },
+    interviewRounds: [InterviewRoundSchema],
   },
   { minimize: false, timestamps: true }
 );
