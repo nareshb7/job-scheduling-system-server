@@ -11,10 +11,13 @@ const InterviewQuestionSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    applicationId: { type: mongoose.Schema.Types.ObjectId, ref: "Application" },
+    applicationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "applications",
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
+      ref: "users",
       required: true,
       select: false,
     },

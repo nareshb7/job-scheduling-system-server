@@ -58,6 +58,11 @@ const applicationSchema = mongoose.Schema(
       required: true,
       default: "Career Website",
     },
+    url: {
+      type: String,
+      required: true,
+      default: "",
+    },
   },
   { minimize: false, timestamps: true }
 );

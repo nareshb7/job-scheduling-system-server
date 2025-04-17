@@ -13,6 +13,12 @@ app.set("trust proxy", true);
 app.use(express.json({ limit: "3mb" }));
 app.use(express.urlencoded({ limit: "3mb", extended: false }));
 
-app.use("/api", routes);
+const middleware = (req, res, next) => {
+  const origin = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+  console.log("Origin URL:", origin);
+  next();
+};
+
+app.use("/api", middleware, routes);
 
 app.listen(PORT, () => console.log("Server is running..!"));

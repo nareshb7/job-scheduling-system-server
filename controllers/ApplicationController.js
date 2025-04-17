@@ -22,6 +22,7 @@ const createNewApplication = async (req, res) => {
       resumeId,
       hrEmail,
       portal,
+      url,
     } = req.body;
     if (!checkValidation(req.body)) {
       throw new Error("Fields are required");
@@ -48,6 +49,7 @@ const createNewApplication = async (req, res) => {
       userId,
       resumeId,
       portal,
+      url,
     });
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
   } catch (err) {
