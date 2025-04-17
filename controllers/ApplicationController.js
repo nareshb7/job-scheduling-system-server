@@ -3,7 +3,7 @@ const { STATUS_CODES } = require("../constants");
 const { ApplicationModel } = require("../models/ApplicationModel");
 const { InterviewQuestionModel } = require("../models/InterviewQuestionsModel");
 const { checkValidation } = require("./helper");
-const { getAnswers } = require("./InterviewQuestions");
+const { getAIAnswers, getAIDescription } = require("./GenAIController");
 
 const createNewApplication = async (req, res) => {
   try {
@@ -21,6 +21,7 @@ const createNewApplication = async (req, res) => {
       userId,
       resumeId,
       hrEmail,
+      portal,
     } = req.body;
     if (!checkValidation(req.body)) {
       throw new Error("Fields are required");
@@ -28,6 +29,8 @@ const createNewApplication = async (req, res) => {
     if (!isValidObjectId(userId)) {
       throw new Error("User Id not valid");
     }
+
+    const aiDescription = await getAIDescription(jobDescription);
     const data = await ApplicationModel.create({
       jobId,
       company,
@@ -40,10 +43,11 @@ const createNewApplication = async (req, res) => {
         name: hrName,
         email: hrEmail,
       },
-      jobDescription,
+      jobDescription: aiDescription,
       companyLocation,
       userId,
       resumeId,
+      portal,
     });
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
   } catch (err) {
@@ -97,7 +101,7 @@ const editInterviewRound = async (req, res) => {
       },
       { new: true }
     );
-    const parsedAnswer = await getAnswers(questionsAsked);
+    const parsedAnswer = await getAIAnswers(questionsAsked);
 
     const interviewQuestions = parsedAnswer.map((question) => ({
       applicationId: id,
@@ -109,7 +113,6 @@ const editInterviewRound = async (req, res) => {
     await InterviewQuestionModel.insertMany(interviewQuestions);
     res.status(STATUS_CODES.SUCCESS).json({
       success: true,
-      genAIResponse,
       data,
     });
   } catch (err) {

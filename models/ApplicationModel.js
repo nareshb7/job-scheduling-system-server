@@ -53,6 +53,11 @@ const applicationSchema = mongoose.Schema(
     jobId: String,
     resumeId: String,
     interviewRounds: [InterviewRoundSchema],
+    portal: {
+      type: String,
+      required: true,
+      default: "Career Website",
+    },
   },
   { minimize: false, timestamps: true }
 );
