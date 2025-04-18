@@ -4,20 +4,21 @@ const { ApplicationModel } = require("../models/ApplicationModel");
 const { InterviewQuestionModel } = require("../models/InterviewQuestionsModel");
 const { checkValidation } = require("./helper");
 const { getAIAnswers, getAIDescription } = require("./GenAIController");
+const { PortalApplicationModel } = require("../models/PortalApplication");
 
 const createNewApplication = async (req, res) => {
   try {
     const {
       jobId,
       company,
-      position,
+      title,
       appliedDate,
       applicationStatus,
       nextFollowup,
       hrNumber,
       hrName,
-      jobDescription,
-      companyLocation,
+      description,
+      location,
       userId,
       resumeId,
       hrEmail,
@@ -31,11 +32,11 @@ const createNewApplication = async (req, res) => {
       throw new Error("User Id not valid");
     }
 
-    const aiDescription = await getAIDescription(jobDescription);
+    const aiDescription = await getAIDescription(description);
     const data = await ApplicationModel.create({
       jobId,
       company,
-      position,
+      title,
       appliedDate,
       applicationStatus,
       nextFollowup,
@@ -44,8 +45,8 @@ const createNewApplication = async (req, res) => {
         name: hrName,
         email: hrEmail,
       },
-      jobDescription: aiDescription,
-      companyLocation,
+      description: aiDescription,
+      location,
       userId,
       resumeId,
       portal,
@@ -122,8 +123,31 @@ const editInterviewRound = async (req, res) => {
   }
 };
 
+const portalToMainApplication = async (req, res) => {
+  try {
+    const { _id, notes, ...rest } = req.body;
+    if (!isValidObjectId(_id)) {
+      throw new Error("Application id is not valid");
+    }
+
+    const isExisted = await PortalApplicationModel.findByIdAndDelete(_id);
+    if (!isExisted) {
+      throw new Error("Portal Application is not found with this id");
+    }
+
+    const data = await ApplicationModel.create({
+      ...rest,
+      notes,
+    });
+    res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
+  } catch (err) {
+    res.status(STATUS_CODES.ERROR).send(err.message);
+  }
+};
+
 module.exports = {
   createNewApplication,
   getJobApplications,
   editInterviewRound,
+  portalToMainApplication,
 };

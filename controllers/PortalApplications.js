@@ -23,12 +23,19 @@ const createNewPortalApplication = async (req, res) => {
     if (!isValidObjectId(userId)) {
       throw new Error("User id not valid");
     }
-
+    const isExisted = await PortalApplicationModel.findOne({
+      userId,
+      company,
+      title,
+    });
+    if (isExisted) {
+      throw new Error("This job is already applied");
+    }
     const aiDescription = await getAIDescription(description);
     const data = await PortalApplicationModel.create({
       company,
       description: aiDescription,
-      location,
+      location: location.split("·")[0],
       portal,
       title,
       url,

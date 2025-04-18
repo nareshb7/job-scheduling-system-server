@@ -7,7 +7,7 @@ const PortalApplicationSchema = mongoose.Schema(
       required: true,
     },
     description: {
-      type: String,
+      type: Object,
       required: true,
     },
     location: {
@@ -31,6 +31,10 @@ const PortalApplicationSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: true,
+    },
+    appliedDate: {
+      type: Date,
+      default: Date.now(),
     },
   },
   { minimize: false, timestamps: true }

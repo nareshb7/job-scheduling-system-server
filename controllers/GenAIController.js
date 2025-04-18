@@ -33,10 +33,15 @@ const getAIDescription = async (description) => {
       model: "gemini-2.0-flash",
       contents: `${description}`,
       config: {
-        systemInstruction: `Hi, Your name is Naresh, Im giving you the job description, you have to concise it, give me in short format, dont add any extra information`,
+        systemInstruction: `Hi, Your name is Naresh, Im giving you the job description, you have to concise it, give me in short format, dont add any extra information, the format should be a object like {title: "Frontend developer", role: "string", responsibilities: string[]}, like this if there is any add as key : string[] format`,
       },
     });
-    return response.candidates[0].content.parts[0].text;
+    const aiDescription = response.candidates[0].content.parts[0].text;
+    const desc = aiDescription.slice(
+      aiDescription.indexOf("{"),
+      aiDescription.lastIndexOf("}") + 1
+    );
+    return desc ? JSON.parse(desc) : { content: desc };
   } catch (err) {
     throw new Error(err.message);
   }

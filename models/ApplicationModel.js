@@ -19,7 +19,7 @@ const applicationSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    position: {
+    title: {
       type: String,
       required: true,
     },
@@ -41,11 +41,11 @@ const applicationSchema = mongoose.Schema(
       phone: String,
       email: String,
     },
-    jobDescription: {
-      type: String,
+    description: {
+      type: Object,
       required: true,
     },
-    companyLocation: {
+    location: {
       type: String,
       required: true,
     },
