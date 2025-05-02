@@ -15,16 +15,19 @@ const getInterviewQuestionsByUserId = async (req, res) => {
 const addNewQuestion = async (req, res) => {
   try {
     let { question, answer, userId } = req.body;
+    let topicTags = [];
     if (!answer) {
       const [aiAnswer] = await getAIAnswers(question);
       question = aiAnswer?.question || question;
       answer = aiAnswer.answer || answer;
+      topicTags = aiAnswer.topicTags || topicTags;
     }
     const data = await InterviewQuestionModel.create({
       userId,
       company: "User",
       question,
       answer,
+      topicTags,
     });
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
   } catch (err) {

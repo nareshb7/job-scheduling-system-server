@@ -11,15 +11,16 @@ const getAIAnswers = async (questions, roundName = "") => {
       contents: `${questions}`,
       config: {
         systemInstruction: `You are an Interviwee. Your name is Naresh. Frontend developer with 3 YOE, 
-          You have to answer the questions in simple lines, give me in this array format [{question: "", answer:""}], give me little brief answer , ${
+          You have to answer the questions in simple lines, give me in this array format [{question: "", answer:"", topicTags : string[], }], give me little brief answer , ${
             roundName ? `current round is ${roundName}` : ""
           }`,
       },
     });
+    console.log("resp::::", response.candidates[0].content.parts);
     const answers = response.candidates[0].content.parts[0].text;
     const parsedAnswer =
       JSON?.parse(
-        answers.slice(answers.indexOf("["), answers.indexOf("]") + 1)
+        answers.slice(answers.indexOf("["), answers.lastIndexOf("]") + 1)
       ) || [];
     return parsedAnswer;
   } catch (err) {

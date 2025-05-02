@@ -55,7 +55,9 @@ const getPortalApplicationByUserId = async (req, res) => {
     if (!isValidObjectId(id)) {
       throw new Error("User ID is not valid");
     }
-    const data = await PortalApplicationModel.find({ userId: id });
+    const data = await PortalApplicationModel.find({ userId: id }).sort({
+      createdAt: -1,
+    });
 
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });
   } catch (err) {

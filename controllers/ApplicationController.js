@@ -64,7 +64,9 @@ const getJobApplications = async (req, res) => {
     if (!isValidObjectId(id)) {
       throw new Error("Id is not valid");
     }
-    const data = await ApplicationModel.find({ userId: id });
+    const data = await ApplicationModel.find({ userId: id }).sort({
+      createdAt: -1,
+    });
     res.status(STATUS_CODES.SUCCESS).json({ data, success: true });
   } catch (err) {
     res.status(STATUS_CODES.ERROR).send(err.message);
@@ -112,6 +114,7 @@ const editInterviewRound = async (req, res) => {
       company: data.company,
       question: question.question,
       answer: question.answer,
+      topicTags: question.topicTags,
     }));
     await InterviewQuestionModel.insertMany(interviewQuestions);
     res.status(STATUS_CODES.SUCCESS).json({
@@ -125,7 +128,7 @@ const editInterviewRound = async (req, res) => {
 
 const portalToMainApplication = async (req, res) => {
   try {
-    const { _id, notes, ...rest } = req.body;
+    const { _id, notes, hrEmail, hrNumber, hrName, ...rest } = req.body;
     if (!isValidObjectId(_id)) {
       throw new Error("Application id is not valid");
     }
@@ -137,6 +140,11 @@ const portalToMainApplication = async (req, res) => {
 
     const data = await ApplicationModel.create({
       ...rest,
+      hrData: {
+        phone: hrNumber,
+        name: hrName,
+        email: hrEmail,
+      },
       notes,
     });
     res.status(STATUS_CODES.SUCCESS).json({ success: true, data });

@@ -7,6 +7,7 @@ const InterviewQuestionSchema = mongoose.Schema(
       required: true,
     },
     answer: String,
+    topicTags: Array,
     company: {
       type: String,
       required: true,
